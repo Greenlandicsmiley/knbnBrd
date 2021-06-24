@@ -154,6 +154,10 @@ case $1 in
         printf "\\x1B[31m%${longest_string}s" "${knbnwc%,*}"; printf "%b" "\\x1B[37m${knbnwc#*:,}\\n"
         printf "\\n"
     ;;
+    "--uninstall"|"uninstall")
+        rm -rf /opt/knbn
+        rm /usr/bin/knbn
+    ;;
     "--license"|"license") #Display license
         file="$(< $LICENSE)"
         printf "\\n%s\\n" "$file" #Prints the license
