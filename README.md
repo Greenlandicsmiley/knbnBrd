@@ -8,7 +8,7 @@ Coreutils, Bash
 
 ## Installation
 Download the latest release
-- tmp
+- https://github.com/Greenlandicsmiley/knbn/releases/latest
 
 ## Install the script
 - Run `make install` inside the script directory
