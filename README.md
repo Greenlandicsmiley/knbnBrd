@@ -15,6 +15,7 @@ Coreutils, Bash
 - https://github.com/Greenlandicsmiley/knbnBrd/releases/latest
 
 ### Install the script
+- Run `./configure`
 - Run `make install` inside the script directory
 
 **NOTE:** You may have to run this as root.
