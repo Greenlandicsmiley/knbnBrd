@@ -14,3 +14,7 @@ Download the latest release
 - Run `make install` inside the script directory
 
 **NOTE:** You may have to run this as root.
+
+## Commands
+
+You can view options by running `knbn help` or `knbn --help` to view the commands
