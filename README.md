@@ -17,4 +17,4 @@ Download the latest release
 
 ## Commands
 
-You can view options by running `knbn help` or `knbn --help` to view the commands
+You can view options by running `knbn help` or `knbn --help`
