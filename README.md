@@ -15,6 +15,9 @@ Install the script
 
 **NOTE:** You may have to run this as root.
 
+Uninstall
+- Run `make uninstall` or `knbn uninstall` to uninstall the script
+
 ## Commands
 
 You can view options by running `knbn help` or `knbn --help`
