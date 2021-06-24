@@ -7,15 +7,15 @@ knbnBrd is a kanban board manager command written in Bash
 Coreutils, Bash
 
 ## Installation
-Download the latest release
+###Download the latest release
 - https://github.com/Greenlandicsmiley/knbn/releases/latest
 
-Install the script
+###Install the script
 - Run `make install` inside the script directory
 
 **NOTE:** You may have to run this as root.
 
-Uninstall
+###Uninstall
 - Run `make uninstall` or `knbn uninstall` to uninstall the script
 
 ## Commands
