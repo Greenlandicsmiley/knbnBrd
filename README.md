@@ -15,6 +15,7 @@ Coreutils, Bash
 - https://github.com/Greenlandicsmiley/knbnBrd/releases/latest
 
 ### Install the script
+- Make `configure` executable, idk how to not require this elp
 - Run `./configure` inside the script directory
 - Run `make install` inside the script directory
 
