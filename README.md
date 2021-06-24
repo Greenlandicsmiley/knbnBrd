@@ -2,12 +2,12 @@
 
 knbnBrd is a kanban board manager command written in Bash
 
-# Requirements
+## Requirements
 
 Coreutils, Bash
 
-# Installation
-## Download the latest release
+## Installation
+Download the latest release
 - tmp
 
 ## Install the script
