@@ -1,2 +1,1 @@
-# knbnBrd
-knbnBrd is a kanban board manager written in Bash
+# knbnBrd is a kanban board manager written in Bash
