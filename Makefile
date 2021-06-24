@@ -4,7 +4,6 @@ all:
 install:
 	@mkdir -p $(DESTDIR)/usr/bin
 	@mkdir -p $(DESTDIR)/opt/knbn
-	@mkdir board
 	@cp -r -p board $(DESTDIR)/opt/knbn/board
 	@cp -p knbn.sh $(DESTDIR)/usr/bin/knbn
 	@cp -p LICENSE $(DESTDIR)/opt/knbn
