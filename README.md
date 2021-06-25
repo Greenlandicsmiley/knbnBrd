@@ -24,6 +24,8 @@ Using the command `knbn`, you can:
 
 Run `knbn help` to learn the syntax
 
+GPLv3 notice can be printed by simply running `knbn`
+
 Track feature progress at:
 - https://github.com/Greenlandicsmiley/knbnBrd/projects/1
 
