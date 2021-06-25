@@ -43,8 +43,8 @@ get_length() { #Invokes get_lsl according to 1st argument
     fi
 }
 
-print_border() { #Prints borders for when listing tasks
-    border="$(printf "%-${lsL}s+" "+")"
+print_border() { #Prints borders when listing tasks
+    printf -v "border" "%-${lsL}s+" "+"
     printf "%s\\n" "${border// /-}"
 }
 
@@ -52,9 +52,11 @@ regenerate_numbers() { #Regenerate line numbers in given column
     get_column "${1,,}" #Gets file for selected column
     newID=1
     for line in $file; do
-        ID="${line%:,*}" #Get ID from line
-        sed -i "/${ID}:,/s_${ID}:,_${newID}:,_" "$knbn_board/${1,,}" #Replace old ID with new ID
-        newID=$(( newID + 1 ))
+        if [[ "${line%-,*}" != ",," ]]; then
+            ID="${line%:,*}" #Get ID from line
+            sed -i "/${ID}:,/s_${ID}:,_${newID}:,_" "$knbn_board/${1,,}" #Replace old ID with new ID
+            newID=$(( newID + 1 ))
+        fi
     done
 }
 
@@ -69,6 +71,14 @@ case $1 in
             printf "%s\\n" "tmp:,$2" >> "$knbn_board/nocat" #Add task to nocat if no 3rd argument given
             regenerate_numbers "nocat"
             $0 "ls" "nocat"
+        fi
+    ;;
+    "nt")
+        if ! [[ -z "$2" && -z "$3" && -z "$4" ]]; then
+            add_column="${2,,}"
+            note="  - $4"
+            new_line="$(grep "${3}:," "$knbn_board/${add_column// /_}")\\n,,-,${4}"
+            sed -i "/${3}:,/s_.*_${new_line}_" "$knbn_board/${add_column// /_}"
         fi
     ;;
     "ls") #List tasks
@@ -102,6 +112,13 @@ case $1 in
                 if grep -q "$2:," "$knbn_board/${old_column// /_}"; then #Check if task exists in old column
                     temporary_line="$(grep "$2:," "$knbn_board/${old_column// /_}")" #Get task string excluding the line nr
                     printf "%s\\n" "${temporary_line/*:,/tmp:,}" >> "$knbn_board/${new_column// /_}" #Insert task into new column with temporary ID
+                    next_line=$2
+                    check_next_line="$(sed -n "${next_line}p" "$knbn_board/${old_column// /_}")"
+                    while [[ ${check_next_line%,-,*} == "," ]]; do
+                        printf "%s\\n" "${check_next_line}" >> "$knbn_board/${new_column// /_}" #Insert task into new column with temporary ID
+                        sed -i "/${2}:,/d" "$knbn_board/${old_column// /_}" #Delete task from old column
+                        check_next_line="$(sed -n "${next_line}p" "$knbn_board/${old_column// /_}")"
+                    done
                     sed -i "/${2}:,/d" "$knbn_board/${old_column// /_}" #Delete task from old column
                     file="$(< $knbn_board/"${old_column// /_}")"
                     if [[ -z $file ]]; then #Check if old column is empty
