@@ -17,7 +17,7 @@ I have created this kanban board manager to both track my tasks and learn more a
 
 Using the command `knbn`, you can:
 - Add tasks to columns
-- Lists tasks
+- List tasks
 - Remove tasks
 - Move tasks from one column to another
 - And wipe columns of all tasks.
