@@ -26,7 +26,8 @@ get_lsl() { #Gets longest line in selected column
 
 ls_tasks(){ #Lists tasks in selected column
     print_border
-    printf "%-${lsL}s|\\n" "| ${1,,}:" #Prints column name
+    column_string="${1,,}"
+    printf "%-${lsL}s|\\n" "| ${column_string//_/ }:" #Prints column name
     get_column "${1,,}" "," #Gets file for selected column
     for task in $file; do
         printf "%-${lsL}s|\\n" "|   ${task//_/ }" #Prints task
@@ -60,13 +61,25 @@ regenerate_numbers() { #Regenerate line numbers in given column
     done
 }
 
+#Delete all notes in a task from a column: rm_note "task ID" "target"
+#move all notes in a task to a note: rm_note "task ID" "old column" "new column"
+rm_notes() {
+    check_next_line="$(sed -n "${1}p" "$knbn_board/${2}")"
+    while [[ ${check_next_line%,-,*} == "," ]]; do
+        ! [[ -z "${3}" ]] && printf "%s\\n" "${check_next_line}" >> "$knbn_board/${3}" #Insert note into new column
+        sed -i "/${2}:,/d" "$knbn_board/${2}" #Delete note from old column
+        check_next_line="$(sed -n "${1}p" "$knbn_board/${2}")"
+    done
+}
+
 case $1 in
     "add") #Add tasks
         if ! [[ -z "$3" ]]; then
             add_column="${3,,}"
-            printf "%s\\n" "tmp:,$2" >> "$knbn_board/${add_column// /_}" #Add task to column specified by 3rd argument, turns any space into _
-            regenerate_numbers "${add_column// /_}"
-            $0 "ls" "${add_column// /_}"
+            add_column="${add_column// /_}"
+            printf "%s\\n" "tmp:,$2" >> "$knbn_board/${add_column}" #Add task to column specified by 3rd argument, turns any space into _
+            regenerate_numbers "${add_column}"
+            $0 "ls" "${add_column}"
         else
             printf "%s\\n" "tmp:,$2" >> "$knbn_board/nocat" #Add task to nocat if no 3rd argument given
             regenerate_numbers "nocat"
@@ -76,9 +89,10 @@ case $1 in
     "nt")
         if ! [[ -z "$2" && -z "$3" && -z "$4" ]]; then
             add_column="${2,,}"
+            add_column="${add_column// /_}"
             note="  - $4"
-            new_line="$(grep "${3}:," "$knbn_board/${add_column// /_}")\\n,,-,${4}"
-            sed -i "/${3}:,/s_.*_${new_line}_" "$knbn_board/${add_column// /_}"
+            new_line="$(grep "${3}:," "$knbn_board/${add_column}")\\n,,-,${4}"
+            sed -i "/${3}:,/s_.*_${new_line}_" "$knbn_board/${add_column}"
         fi
     ;;
     "ls") #List tasks
@@ -87,7 +101,7 @@ case $1 in
             if [[ -z "$2" ]]; then
                 get_length
                 for column in $(dir "$knbn_board"); do
-                    ls_tasks "$column"
+                    ls_tasks "${column,,}"
                 done
                 print_border
             else
@@ -107,28 +121,24 @@ case $1 in
     "mv") #Move a file
         if ! [[ -z "$3" && -z "$4" ]]; then #Check if 3rd and 4th arguments are empty
             old_column="${3,,}"
+            old_column="${old_column// /_}"
             new_column="${4,,}"
-            if [[ -f "$knbn_board/${old_column// /_}" ]]; then #Check if old column exists
-                if grep -q "$2:," "$knbn_board/${old_column// /_}"; then #Check if task exists in old column
-                    temporary_line="$(grep "$2:," "$knbn_board/${old_column// /_}")" #Get task string excluding the line nr
-                    printf "%s\\n" "${temporary_line/*:,/tmp:,}" >> "$knbn_board/${new_column// /_}" #Insert task into new column with temporary ID
-                    next_line=$2
-                    check_next_line="$(sed -n "${next_line}p" "$knbn_board/${old_column// /_}")"
-                    while [[ ${check_next_line%,-,*} == "," ]]; do
-                        printf "%s\\n" "${check_next_line}" >> "$knbn_board/${new_column// /_}" #Insert task into new column with temporary ID
-                        sed -i "/${2}:,/d" "$knbn_board/${old_column// /_}" #Delete task from old column
-                        check_next_line="$(sed -n "${next_line}p" "$knbn_board/${old_column// /_}")"
-                    done
-                    sed -i "/${2}:,/d" "$knbn_board/${old_column// /_}" #Delete task from old column
-                    file="$(< $knbn_board/"${old_column// /_}")"
+            new_column="${new_column// /_}"
+            if [[ -f "$knbn_board/$old_column" ]]; then #Check if old column exists
+                if grep -q "$2:," "$knbn_board/$old_column"; then #Check if task exists in old column
+                    temporary_line="$(grep "$2:," "$knbn_board/$old_column")" #Get task string excluding the line nr
+                    printf "%s\\n" "${temporary_line/*:,/tmp:,}" >> "$knbn_board/$new_column" #Insert task into new column with temporary ID
+                    sed -i "/${2}:,/d" "$knbn_board/$old_column" #Delete task from old column
+                    rm_notes "$2" "$old_column" "$new_column"
+                    file="$(< "$knbn_board/$old_column")"
                     if [[ -z $file ]]; then #Check if old column is empty
-                        rm "$knbn_board/${old_column// /_}" #Delete column
-                        regenerate_numbers "${new_column// /_}" #Regenerate line nr in new column
-                        $0 "ls" "${new_column// /_}"
+                        rm "$knbn_board/$old_column" #Delete column
+                        regenerate_numbers "$new_column" #Regenerate line nr in new column
+                        $0 "ls" "$new_column"
                     else
-                        regenerate_numbers "${old_column// /_}" #Regenerate line nr in old column
-                        regenerate_numbers "${new_column// /_}" #Regenerate line nr in new column
-                        $0 "ls" "${old_column// /_},${new_column// /_}"
+                        regenerate_numbers "$old_column" #Regenerate line nr in old column
+                        regenerate_numbers "$new_column" #Regenerate line nr in new column
+                        $0 "ls" "$old_column,$new_column"
                     fi
                 fi
             fi
@@ -137,14 +147,31 @@ case $1 in
     "rm") #Delete a note if 3rd argument has been set
         if ! [[ -z "$3" ]]; then
             rm_column="${3,,}"
-            grep -q "$2:," "$knbn_board/${rm_column// /_}" && sed -i "/${2}:,/d" "$knbn_board/${rm_column// /_}" #Check if ID in selected column exists
-            file="$(< $knbn_board/"${rm_column// /_}")"
+            rm_column="${rm_column// /_}"
+            grep -q "$2:," "$knbn_board/$rm_column" && sed -i "/${2}:,/d" "$knbn_board/$rm_column" #Check if ID in selected column exists
+            rm_notes "$2" "$rm_column"
+            file="$(< $knbn_board/"$rm_column")"
             if [[ -z $file ]]; then
-                rm "${knbn_board:?}/${rm_column// /_}" #Delete file if column is empty
+                rm "${knbn_board:?}/$rm_column" #Delete file if column is empty
             else
-                regenerate_numbers "${rm_column// /_}" #Regenerate line numbers
-                $0 "ls" "${rm_column// /_}"
+                regenerate_numbers "$rm_column" #Regenerate line numbers
+                $0 "ls" "$rm_column"
             fi
+        fi
+    ;;
+    "ntrm") #Delete a note
+        if ! [[ -z "$2" && -z "$3" && -z "$4" ]]; then
+            column_name="${2,,}"
+            column_name="${column_name// /_}"
+            if grep -q "$3:," "$knbn_board/${column_name}"; then
+                offset_line=$(( $3 + $4 ))
+                get_note="$(sed -n "${offset_line}p" "$knbn_board/${column_name}")"
+                if [[ ${get_note%,-,*} == "," ]]; then
+                    sed -i "${offset_line}d" "$knbn_board/${column_name}"
+                fi
+            fi
+        else
+            printf "%s\\n" "Syntax: knbn ntrm [column] [task ID] [offset from task ID]"
         fi
     ;;
     "wipe") #Wipe a board if knbn_board has been set, if not fail
