@@ -40,6 +40,14 @@ Install the script
 
 **NOTE:** You may have to run this as root.
 
+### Updating the script
+Download latest release
+- https://github.com/Greenlandicsmiley/knbnBrd/releases/latest
+
+Run `make update` in the script directory
+
+**NOTE:** You may have to run this as root.
+
 ### Uninstall
 - Run `make uninstall` or `knbn uninstall` to uninstall the script
 
