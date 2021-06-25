@@ -11,6 +11,22 @@ knbnBrd is a kanban board manager command written in Bash
 
 Coreutils, Bash
 
+### Description
+In an effort to further understand and learn bash scripting within Linux, 
+I have created this kanban board manager to both track my tasks and learn more about scripting
+
+Using the command `knbn`, you can:
+- Add tasks to columns
+- Lists tasks
+- Remove tasks
+- Move tasks from one column to another
+- And wipe columns of all tasks.
+
+Run `knbn help` to learn the syntax
+
+Track feature progress at:
+- https://github.com/Greenlandicsmiley/knbnBrd/projects/1
+
 ### Installation
 Download the latest release
 - https://github.com/Greenlandicsmiley/knbnBrd/releases/latest
@@ -22,9 +38,7 @@ Install the script
 
 **NOTE:** You may have to run this as root.
 
-Uninstall
+### Uninstall
 - Run `make uninstall` or `knbn uninstall` to uninstall the script
 
-## Commands
-
-You can view options by running `knbn help` or `knbn --help`
+**NOTE:** You may have to run either as root.
