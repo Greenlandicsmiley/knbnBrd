@@ -13,7 +13,7 @@ Coreutils, Bash
 
 ### Description
 In an effort to further understand and learn bash scripting within Linux, 
-I have created this kanban board manager to both track my tasks and learn more about scripting
+I have created this kanban board manager
 
 Using the command `knbn`, you can:
 - Add tasks to columns
