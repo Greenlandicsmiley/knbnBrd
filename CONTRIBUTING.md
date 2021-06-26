@@ -16,6 +16,6 @@ Arguments must be in this order: Functions > Columns > Tasks > Note offset > Des
 This is a requirement to keep everything consistent
 
 ### For example:
-- Add a task to "todo": knbn add todo "Description"
-- Remove 2nd task in "todo": knbn rm todo 2
-- Move 5th task from "todo" to "in progress": knbn mv todo "in progress" 5
+- Add a task to "todo": `knbn add todo "Description"`
+- Remove 2nd task in "todo": `knbn rm todo 2`
+- Move 5th task from "todo" to "in progress": `knbn mv todo "in progress" 5`
