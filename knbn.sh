@@ -1,6 +1,6 @@
 #!/bin/bash
 
-knbn_directory="/opt/knbn"
+knbn_directory="/opt/knbnBrd"
 knbn_board="$knbn_directory/board"
 LICENSE="$knbn_directory/LICENSE"
 NOTICE="$knbn_directory/NOTICE"
