@@ -9,11 +9,13 @@ install:
 	@cp -p knbn.sh $(DESTDIR)/usr/bin/knbn
 	@cp -p LICENSE $(DESTDIR)/opt/knbnBrd
 	@cp -p NOTICE $(DESTDIR)/opt/knbnBrd
+	@cp -p EXAMPLES $(DESTDIR)/opt/knbnBrd
 	@chmod 755 $(DESTDIR)/usr/bin/knbn
 
 update:
 	@cp -p knbn.sh $(DESTDIR)/usr/bin/knbn
 	@cp -p NOTICE $(DESTDIR)/opt/knbnBrd
+	@cp -p EXAMPLES $(DESTDIR)/opt/knbnBrd
 	@chmod 755 $(DESTDIR)/usr/bin/knbn
 	@echo "View the changes on my github page"
 
