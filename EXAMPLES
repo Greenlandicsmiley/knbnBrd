@@ -1,0 +1,36 @@
+Examples:
+
+Adding a task to "in progress"
+knbn add "in progress" "Create account for new CEO"
+
+Adding a note to task id 1 in column "in progress"
+knbn nt "in progress" 1 "Waiting for license purchases"
+
+Listing tasks in column "in progress"
+knbn ls "in progress"
+
+Listing tasks in columns "in progress" and "to do"
+knbn ls "in progress,to do"
+
+Listing tasks in all columns
+knbn ls
+
+Moving task id 1 from "to do" to "in progress"
+knbn mv "to do" "in progress" 1
+
+Removing task id 1 from "in progress"
+knbn rm "in progress" 1
+
+Removing 2nd note from "in progress" in task id 1
+knbn rmnt "in progress" 1 2
+
+Deleting all tasks in "in progress"
+knbn wipe "in progress"
+
+Backing up the board to directory "monday" in current directory
+knbn backup monday
+
+Restoring from directory "monday" in current directory
+knbn restore monday
+
+Backup and restore paths can be substituted with absolute paths.
