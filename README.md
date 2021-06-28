@@ -5,7 +5,7 @@ knbnBrd is a kanban board manager command written in Bash
 <a href="./LICENSE"><img src="https://img.shields.io/github/license/Greenlandicsmiley/knbnBrd?color=Green&style=flat-square"></a>
 <a href="https://github.com/Greenlandicsmiley/knbnBrd/releases/latest"><img src="https://img.shields.io/github/v/tag/Greenlandicsmiley/knbnBrd?color=Green&label=version&style=flat-square"></a>
 <img src="https://img.shields.io/github/languages/top/Greenlandicsmiley/knbnBrd?color=Green&label=bash&style=flat-square">
-<img src="https://i.imgur.com/KTpI8gj.png" height="240px" align="right">
+<img src="https://i.imgur.com/KTpI8gj.png" height="360px" align="right">
 
 ### Requirements
 
