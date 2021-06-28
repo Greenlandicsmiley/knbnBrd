@@ -4,6 +4,7 @@ knbn_directory="/opt/knbnBrd"
 knbn_board="$knbn_directory/board"
 LICENSE="$knbn_directory/LICENSE"
 NOTICE="$knbn_directory/NOTICE"
+EXAMPLES="$knbn_directory/EXAMPLES"
 
 regenerate_numbers() { #Regenerate line numbers in given column
     if [[ -f "$knbn_board/${1,,}" ]]; then #Check if file exists
@@ -168,6 +169,9 @@ case $1 in
     "notice"|"-N"|"--notice")
         printf "\\n%s\\n" "$(< $NOTICE)" #Print the notice
         printf "\\n%s\\n\\nv2.0\\n\\n" "Type knbn license to view the entire license, knbn help to view options"
+    ;;
+    "examples"|"-e"|"--examples")
+        printf "\\n%s\\n" "$(< $EXAMPLES)" #Print the examples
     ;;
     "help"|"-h"|"--help"|*)
         printf "\\n%s\\n" "Usage: knbn [option] [arguments]"
