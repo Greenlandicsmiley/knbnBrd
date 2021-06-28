@@ -17,14 +17,16 @@ I have created this kanban board manager
 
 Using the command `knbn`, you can:
 - Add tasks to columns
+- Add notes to tasks
 - List tasks
 - Remove tasks
+- Remove notes from tasks
 - Move tasks from one column to another
-- And wipe columns of all tasks.
+- Wipe columns of all tasks.
 
 Run `knbn help` to learn the syntax
 
-GPLv3 notice can be printed by simply running `knbn`
+GPLv3 notice can be printed by running `knbn notice`
 
 Track feature progress at:
 - https://github.com/Greenlandicsmiley/knbnBrd/projects/1
