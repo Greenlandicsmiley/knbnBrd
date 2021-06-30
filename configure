@@ -1,2 +1,3 @@
 #!/bin/bash
-mkdir board
+echo "Creating $HOME/.local/share/knbnBrd"
+mkdir $HOME/.local/share/knbnBrd

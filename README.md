@@ -50,6 +50,11 @@ Run `make update` in the script directory
 
 **NOTE:** You may have to run this as root.
 
+### Migrating from /opt to home
+After you have updated, you can run `make migrate` to copy board from /opt/knbnBrd to ~/.local/share/knbnBrd
+
+This will delete the /opt/knbnBrd directory
+
 ### Uninstall
 - Run `make uninstall` or `knbn uninstall` to uninstall the script
 
