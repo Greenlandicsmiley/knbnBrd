@@ -30,7 +30,8 @@ knbn wipe "in progress"
 Backing up the board to directory "monday" in current directory
 knbn backup monday
 
-Restoring from directory "monday" in current directory
+Restoring from backup "monday" in current directory
 knbn restore monday
 
 Backup and restore paths can be substituted with absolute paths.
+Backups are stored inside directories

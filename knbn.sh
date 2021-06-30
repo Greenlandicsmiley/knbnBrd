@@ -9,10 +9,11 @@ EXAMPLES="/usr/share/doc/knbnBrd/EXAMPLES"
 regenerate_numbers() { #Regenerate line numbers in given column
     ! [[ -f "$knbn_board/${1,,}" ]] && return 1 #Check if file exists
     file="$(< "$knbn_board/${1,,}")" #Gets file for selected column
+    new_id=1
     for line in ${file// /<}; do #Spaces are replaced with < to read by lines
         if ! [[ ${line:0:4} == "<<-<" ]]; then #Check if line is a note
             id="${line%>*}" #Get id
-            sed -i "/${id}> /s|${id}>|${new_id:=1}>|" "$knbn_board/${1,,}" #Replace old id with new id
+            sed -i "/${id}> /s|${id}>|${new_id}>|" "$knbn_board/${1,,}" #Replace old id with new id
             new_id=$(( new_id + 1 ))
         fi
     done
@@ -32,9 +33,10 @@ arg_column="${arg_column// /_}"
 
 column_file="$knbn_board/$arg_column"
 
-! [[ -z "$2" ]] && task_string="$(grep -n "$3> " "$column_file")"
-task_line=${task_line:0:3}
-task_line=${task_line%:*}
+[[ -f "$column_file" ]] && task_string="$(grep -n "$3> " "$column_file")"
+[[ "$1" =~ ^("mv"|"-m"|"--move")$ ]] && task_string="$(grep -n "$4> " "$column_file")"
+task_line="${task_string:0:3}"
+task_line="${task_line%:*}"
 
 case $1 in
     "add"|"-a"|"--add")
@@ -45,14 +47,17 @@ case $1 in
         knbn "ls"
     ;;
     "nt"|"-n"|"--note")
-        ! [[ -f "$column_file" ]] || ! grep -q "$3> " "$column_file" && [[ -z "$4" || -z "$3" ]] && \
+        [[ -z "$4" || -z "$3" ]] || ! [[ -f "$column_file" ]] || ! grep -q "$3> " "$column_file" && \
             printf "%s\\n" "Syntax: knbn nt [column] [task id] [description]" && exit 1
 
-        check_next_line="$(sed -n "$((task_line+1))p" "$column_file")" #Get string of next line
+        task_line=$(( task_line + 1 ))
+        check_next_line="$(sed -n "${task_line}p" "$column_file")" #Get string of next line
         while [[ ${check_next_line:0:4} == "  - " ]]; do #Check if string is a note
             task_line=$(( task_line + 1 ))
             check_next_line="$(sed -n "${task_line}p" "$column_file")"
         done
+        task_line=$(( task_line - 1 ))
+        check_next_line="$(sed -n "${task_line}p" "$column_file")"
         sed -i "${task_line}s_.*_${check_next_line}\\n  - ${4}_" "$column_file" #Add note to line
         knbn "ls"
     ;;
@@ -81,7 +86,7 @@ case $1 in
         printf "%s\\n" "${border// /-}"
     ;;
     "mv"|"-m"|"--move")
-        ! [[ -f "$column_file" ]] || ! grep -q "$4> " "$column_file" && [[ -z "$3" || -z "$4" ]] && \
+        [[ -z "$3" || -z "$4" ]] || ! [[ -f "$column_file" ]] || ! grep -q "$4> " "$column_file" && \
             printf "%s\\n" "Syntax: knbn mv [old column] [new column] [task id]" && exit 1
 
         new_column="${3// /_}"
@@ -95,7 +100,7 @@ case $1 in
         knbn "ls"
     ;;
     "rm"|"-d"|"--remove")
-        ! [[ -f "$column_file" ]] || ! grep -q "$3> " "$column_file" && [[ -z "$3" ]] && \
+        [[ -z "$3" ]] || ! [[ -f "$column_file" ]] || ! grep -q "$3> " "$column_file" && \
             printf "%s\\n" "Syntax: knbn rm [column] [task id]" && exit 1
 
         rm_notes "$(( task_line + 1 ))" "$arg_column"
@@ -105,8 +110,7 @@ case $1 in
         knbn "ls"
     ;;
     "rmnt"|"-r"|"--remove-note")
-        ! [[ -f "$column_file" ]] || ! grep -q "$3> " "$column_file" && \
-            [[ -z "$3" || -z "$4" ]] && \
+        [[ -z "$3" || -z "$4" ]] || ! [[ -f "$column_file" ]] || ! grep -q "$3> " "$column_file" && \
             printf "%s\\n" "Syntax: knbn rmnt [column] [task id] [line offset]" && exit 1
 
         get_note="$(sed -n "$(( task_line + $4 ))p" "$column_file")"
