@@ -54,6 +54,8 @@ After you have updated, you can run `make migrate` to copy board from /opt/knbnB
 
 This will delete the /opt/knbnBrd directory
 
+**NOTE:** You may have to run this as root.
+
 ### Uninstall
 - Run `make uninstall` or `knbn uninstall` to uninstall the script
 
