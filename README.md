@@ -36,7 +36,6 @@ Download the latest release
 - https://github.com/Greenlandicsmiley/knbnBrd/releases/latest
 
 Install the script
-- Make `configure` executable, idk how to not require this elp
 - Run `./configure` inside the script directory
 - Run `make install` inside the script directory
 
@@ -47,6 +46,13 @@ Download latest release
 - https://github.com/Greenlandicsmiley/knbnBrd/releases/latest
 
 Run `make update` in the script directory
+
+**NOTE:** You may have to run this as root.
+
+### Migrating from /opt to home
+After you have updated, you can run `make migrate` to copy board from /opt/knbnBrd to ~/.local/share/knbnBrd
+
+This will delete the /opt/knbnBrd directory
 
 **NOTE:** You may have to run this as root.
 
