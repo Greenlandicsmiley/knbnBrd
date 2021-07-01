@@ -8,24 +8,22 @@ EXAMPLES="/usr/share/doc/knbnBrd/EXAMPLES"
 EXAMPLES="/usr/share/doc/knbnBrd/HELP"
 
 regenerate_numbers() { #Regenerate line numbers in given column
-    ! [[ -f "$knbn_board/${1,,}" ]] && return 1 #Check if file exists
-    file="$(< "$knbn_board/${1,,}")" #Gets file for selected column
-    new_id=1
-    for line in ${file// /<}; do #Spaces are replaced with < to read by lines
-        if ! [[ ${line:0:4} == "<<-<" ]]; then #Check if line is a note
-            id="${line%>*}" #Get id
-            sed -i "/${id}> /s|${id}>|${new_id}>|" "$knbn_board/${1,,}" #Replace old id with new id
+    ! [[ -f "$knbn_board/${1,,}" ]] && return 1
+    new_id=1 #Need to set new_id to 1 so it does not carry over to the other column
+    while IFS= read -r line; do
+        ! [[ "$line" == "  - "* ]] && \
+            sed -i "/${line%>*}> /s|${line%>*}>|${new_id}>|" "$knbn_board/${1,,}" && \
             new_id=$(( new_id + 1 ))
-        fi
-    done
+    done < <(grep -v '^ *#' < "$knbn_board/${1,,}")
 }
 
-rm_notes() {
+get_notes() {
     end_line=$task_line
     while [[ "$(sed -n "$(( end_line + 1 ))p" "$column_file")" == "  - "* ]]; do
         end_line=$(( end_line + 1 ))
     done
-    ! [[ -z "$1" ]] && sed -n "${task_line},${end_line}p" "$column_file" >> "$knbn_board/${new_column,,}" && \
+    [[ "$1" == "nt" ]] && return 0
+    [[ "$1" == "mv" ]] && sed -n "${task_line},${end_line}p" "$column_file" >> "$knbn_board/${new_column,,}" && \
         regenerate_numbers "$new_column"
     sed -i "${task_line},${end_line}d" "$column_file"
     [[ -z "$(< "$column_file")" ]] && rm "${column_file:?}"
@@ -34,21 +32,19 @@ rm_notes() {
 }
 
 check_grep() {
+    [[ -z "$2" ]] && return 0 #Return 0 because it has to be successful to print syntax line and exit the script
     ! [[ -f "$column_file" ]] && return 0
     ! grep -q "${1:-mt}> " "$column_file" && return 0
+
+    task_string="$(grep -n "$1> " "$column_file")"
+    task_line="${task_string:0:3}"
+    task_line="${task_line%:*}"
 }
 
 arg_column="${2,,}"
 arg_column="${arg_column// /_}"
-
+new_column="${3// /_}"
 column_file="$knbn_board/$arg_column"
-
-[[ -f "$column_file" ]] && task_string="$(grep -n "$3> " "$column_file")"
-[[ "$1" =~ ^("mv"|"-m"|"--move")$ ]] && \
-    task_string="$(grep -n "$4> " "$column_file")" && \
-    new_column="${3// /_}"
-task_line="${task_string:0:3}"
-task_line="${task_line%:*}"
 
 case $1 in
     "add"|"-a"|"--add")
@@ -59,14 +55,10 @@ case $1 in
         knbn "ls"
     ;;
     "nt"|"-n"|"--note")
-        [[ -z "$4" ]] && \
-            check_grep "$3" && \
-            printf "%s\\n" "Please check your syntax" && exit 1
+        check_grep "$3" "$4" && \
+            printf "%s\\n" "Syntax: knbn nt [column] [task id] [description]" && exit 1
 
-        end_line=$task_line
-        while [[ "$(sed -n "$(( end_line + 1 ))p" "$column_file")" == "  - "* ]]; do
-            end_line=$(( end_line + 1 ))
-        done
+        get_notes "nt"
         replace_string="$(sed -n "${end_line}p" "$column_file")"
         sed -i "${end_line}s_.*_${check_next_line}\\n  - ${4}_" "$column_file" #Add note to line
         knbn "ls"
@@ -75,11 +67,10 @@ case $1 in
         [[ -z $(dir "$knbn_board") ]] && printf "%s\\n" "The board is empty" && exit 0 #Exit with 0 because board being empty is necessarily not an error
         [[ -z "$2" ]] && arg_column="$(dir "$knbn_board")" #Default to all columns
         for column in ${arg_column//,/ }; do #Replace comma with space to loop through selected columns
-            file="$(< "$knbn_board/$column")"
-            for task in ${file// /<}; do
+            while IFS= read -r task; do
                 text="|   $task " #This is to visualize how many extra characters need to be accounted for length
                 [[ ${#text} -gt $padding_length ]] && padding_length=${#text} #Set padding length to longest string
-            done
+            done < <(grep -v '^ *#' < "$knbn_board/$column")
             text="| $column: "
             [[ ${#text} -gt $padding_length ]] && padding_length=${#text} #This is to prevent cases where padding is not correct when column is longer than the tasks
         done
@@ -87,29 +78,27 @@ case $1 in
         for column in ${arg_column//,/ }; do
             printf "%s\\n" "${border// /-}"
             printf "%-${padding_length}s|\\n" "| ${column//_/ }:"
-            file="$(< "$knbn_board/$column")"
-            for task in ${file// /<}; do
+            while IFS= read -r task; do
                 task="${task//>/:}"
-                printf "%-${padding_length}s|\\n" "|   ${task//</ }"
-            done
+                printf "%-${padding_length}s|\\n" "|   $task"
+            done < <(grep -v '^ *#' < "$knbn_board/$column")
         done
         printf "%s\\n" "${border// /-}"
     ;;
     "mv"|"-m"|"--move")
-        check_grep "$4" && \
+        check_grep "$4" "," && \
             printf "%s\\n" "Syntax: knbn mv [old column] [new column] [task id]" && exit 1
 
-        rm_notes ","
+        get_notes "mv"
     ;;
     "rm"|"-d"|"--remove")
-        check_grep "$3" && \
+        check_grep "$3" "," && \
             printf "%s\\n" "Syntax: knbn rm [column] [task id]" && exit 1
 
-        rm_notes
+        get_notes
     ;;
     "rmnt"|"-r"|"--remove-note")
-        [[ -z "$4" ]] && \
-            check_grep "$3" && \
+        check_grep "$3" "$4" && \
             printf "%s\\n" "Syntax: knbn rmnt [column] [task id] [line offset]" && exit 1
 
         [[ "$(sed -n "$(( task_line + $4 ))p" "$column_file")" == "  - "* ]] && \
@@ -127,7 +116,7 @@ case $1 in
     ;;
     "restore"|"-R"|"--restore")
         [[ -z "$2" ]] && \
-            printf "%s\\n" "Syntax: knbn backup [backup location]" && exit 1
+            printf "%s\\n" "Syntax: knbn restore [backup location]" && exit 1
 
         read -r -s -p "Are you sure you want to restore from backup? This will remove everything from the board. (y/N)" -n 1 CONFIRM
         printf "%s\\n" ""
