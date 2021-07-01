@@ -1,0 +1,44 @@
+Usage: knbn [option] [arguments]
+
+Tasks
+  add, -a, --add [column] [description]
+    Add a task to a column
+  ls, -l, --list [column],...
+    List tasks in selected columns
+  ls, -l, --list
+    List all tasks
+  mv, -m, --move [old column] [new column] [task id]
+    Move a task
+  rm, -d, --remove [column] [task id]
+    Delete a task from a column
+  wipe, -w, --wipe [column]
+    Delete all tasks in a column
+
+Notes
+  nt, -n, --note [column] [task id] [description]
+    Add a note to a task
+  rmnt, -r, --remove-note [column] [task id] [line offset]
+    Delete a note from a task
+
+Backup and restore
+  backup, -b, --backup [column] [backup location]
+    Backup the kanban board
+  restore, -R, --restore [backup location]
+    Restore from backup
+
+Other
+  uninstall, -u, --uninstall
+    Uninstall knbnBrd
+  license, -L, --license
+    Print license
+  notice, -N, --notice
+    Print GPLv3 notice and contact information
+  help, -h, --help
+    Print this
+  examples, -e, --examples
+    Print examples
+  --create-dir
+    Create knbn board directory
+
+Contact the author at greenlandicsmiley@gmail.com
+Or via reddit www.reddit.com/u/Greenlandicsmiley
