@@ -60,7 +60,7 @@ case $1 in
 
         get_notes "nt"
         replace_string="$(sed -n "${end_line}p" "$column_file")"
-        sed -i "${end_line}s_.*_${check_next_line}\\n  - ${4}_" "$column_file" #Add note to line
+        sed -i "${end_line}s_.*_${replace_string}\\n  - ${4}_" "$column_file" #Add note to line
         knbn "ls"
     ;;
     "ls"|"-l"|"--list")
